@@ -56,7 +56,7 @@ func importDocs(t *testing.T, url, name string, docs ...map[string]any) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	resp.Body.Close()
+	_ = resp.Body.Close()
 }
 
 func tableCollection(t *testing.T, url string) string {
@@ -86,9 +86,11 @@ func adminRequest(t *testing.T, method, url string, body any) []byte {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	var out bytes.Buffer
-	out.ReadFrom(resp.Body)
+	if _, err := out.ReadFrom(resp.Body); err != nil {
+		t.Fatal(err)
+	}
 	if resp.StatusCode >= 300 {
 		t.Fatalf("%s %s: status %d: %s", method, url, resp.StatusCode, out.String())
 	}
@@ -103,7 +105,9 @@ type stubResponse struct {
 func stubTypesense(t *testing.T, routes map[string]stubResponse) string {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(routes[r.URL.Path].status)
-		w.Write([]byte(routes[r.URL.Path].body))
+		if _, err := w.Write([]byte(routes[r.URL.Path].body)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	return srv.URL
@@ -119,9 +123,13 @@ func stubSearchCapture(t *testing.T, result string) (string, *[]map[string]any) 
 		var body struct {
 			Searches []map[string]any `json:"searches"`
 		}
-		json.NewDecoder(r.Body).Decode(&body)
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			t.Error(err)
+		}
 		sent = append(sent, body.Searches...)
-		w.Write([]byte(`{"results":[` + strings.TrimSuffix(strings.Repeat(result+",", len(body.Searches)), ",") + `]}`))
+		if _, err := w.Write([]byte(`{"results":[` + strings.TrimSuffix(strings.Repeat(result+",", len(body.Searches)), ",") + `]}`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	return srv.URL, &sent

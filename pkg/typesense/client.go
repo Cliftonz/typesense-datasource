@@ -37,7 +37,7 @@ func (c *Client) Health(ctx context.Context) (Health, error) {
 	if err != nil {
 		return Health{}, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	raw, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return Health{}, fmt.Errorf("Typesense health returned status %d: %w", resp.StatusCode, err)
@@ -65,7 +65,7 @@ func (c *Client) ListCollections(ctx context.Context) ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return nil, statusError(resp)
 	}
@@ -93,7 +93,7 @@ func (c *Client) MultiSearch(ctx context.Context, body []byte) ([]SearchResult, 
 	if err != nil {
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
 		return nil, statusError(resp)
 	}

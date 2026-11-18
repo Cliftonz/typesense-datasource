@@ -36,7 +36,9 @@ func TestHealthOK(t *testing.T) {
 func stubServer(t *testing.T, status int, body string) *Client {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(status)
-		w.Write([]byte(body))
+		if _, err := w.Write([]byte(body)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	return New(srv.URL, apiKey, srv.Client())
@@ -79,7 +81,7 @@ func adminDo(t *testing.T, method, url, body string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode >= 300 {
 		b, _ := io.ReadAll(resp.Body)
 		t.Fatalf("%s %s: %d %s", method, url, resp.StatusCode, b)
@@ -234,7 +236,9 @@ func TestTrailingSlashBaseURL(t *testing.T) {
 		if r.URL.Path != "/collections" {
 			t.Errorf("path %q", r.URL.Path)
 		}
-		w.Write([]byte(`[]`))
+		if _, err := w.Write([]byte(`[]`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	if _, err := New(srv.URL+"/", apiKey, srv.Client()).ListCollections(t.Context()); err != nil {
@@ -289,7 +293,9 @@ func TestMultiSearchContentType(t *testing.T) {
 		if got := r.Header.Get("Content-Type"); got != "application/json" {
 			t.Errorf("Content-Type %q", got)
 		}
-		w.Write([]byte(`{"results":[]}`))
+		if _, err := w.Write([]byte(`{"results":[]}`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	if _, err := New(srv.URL, apiKey, srv.Client()).MultiSearch(t.Context(), []byte(`{"searches":[]}`)); err != nil {
@@ -323,7 +329,9 @@ func TestErrorBodyReadFailure(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", "100")
 		w.WriteHeader(500)
-		w.Write([]byte("short"))
+		if _, err := w.Write([]byte("short")); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	_, err := New(srv.URL, apiKey, srv.Client()).ListCollections(t.Context())
@@ -394,7 +402,9 @@ func TestHealthBodyReadFailure(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", "100")
 		w.WriteHeader(503)
-		w.Write([]byte("short"))
+		if _, err := w.Write([]byte("short")); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	_, err := New(srv.URL, apiKey, srv.Client()).Health(t.Context())

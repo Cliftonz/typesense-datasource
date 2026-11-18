@@ -40,7 +40,9 @@ func hitsRun(t *testing.T, d *Datasource, model map[string]any, from, to int64) 
 	model["timeField"] = "ts"
 	raw, _ := json.Marshal(model)
 	var qm queryModel
-	json.Unmarshal(raw, &qm)
+	if err := json.Unmarshal(raw, &qm); err != nil {
+		t.Fatal(err)
+	}
 	return d.hitsSeries(t.Context(), qm, backend.DataQuery{
 		JSON:      raw,
 		Interval:  10 * time.Second,
