@@ -32,7 +32,10 @@ jobs:
         env:
           TYPESENSE_DATA_DIR: /data
           TYPESENSE_API_KEY: test-key
-        options: --tmpfs /data
+        options: >-
+          --tmpfs /data
+          --health-cmd "bash -c 'exec 3<>/dev/tcp/localhost/8108 && printf \"GET /health HTTP/1.0\r\n\r\n\" >&3 && grep -q ok.:true <&3'"
+          --health-interval 2s --health-retries 15 --health-start-period 30s
       typesense30:
         image: typesense/typesense:30.2
         ports:
@@ -40,7 +43,10 @@ jobs:
         env:
           TYPESENSE_DATA_DIR: /data
           TYPESENSE_API_KEY: test-key
-        options: --tmpfs /data
+        options: >-
+          --tmpfs /data
+          --health-cmd "bash -c 'exec 3<>/dev/tcp/localhost/8108 && printf \"GET /health HTTP/1.0\r\n\r\n\" >&3 && grep -q ok.:true <&3'"
+          --health-interval 2s --health-retries 15 --health-start-period 30s
     steps:
       - uses: actions/checkout@v7
         with:
