@@ -5,15 +5,12 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"regexp"
-	"sync/atomic"
 	"testing"
 	"time"
 
 	"github.com/grafana/grafana-plugin-sdk-go/backend"
 	"github.com/grafana/grafana-plugin-sdk-go/data"
 )
-
-var rawCollectionSeq atomic.Int64
 
 func runRaw(t *testing.T, d *Datasource, body string, from, to time.Time) backend.DataResponse {
 	return d.rawTables(t.Context(), body, backend.TimeRange{From: from, To: to})
@@ -212,7 +209,9 @@ func TestRawWithoutSearchesFailsBeforeSending(t *testing.T) {
 	sent := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sent++
-		w.Write([]byte(`{"results":[]}`))
+		if _, err := w.Write([]byte(`{"results":[]}`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	for _, body := range []string{`{}`, `{"searches":null}`, `{"searches":[]}`} {

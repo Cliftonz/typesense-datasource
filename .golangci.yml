@@ -3,3 +3,7 @@ linters:
   exclusions:
     paths:
       - node_modules
+    rules:
+      - linters:
+          - staticcheck
+        text: 'ST1005:'

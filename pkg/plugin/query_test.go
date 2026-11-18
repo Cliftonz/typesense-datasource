@@ -348,7 +348,9 @@ func TestQueryDataRunsUpToTenQueriesAtOnce(t *testing.T) {
 		mu.Lock()
 		inFlight--
 		mu.Unlock()
-		w.Write([]byte(`{"results":[{"found":0,"hits":[]}]}`))
+		if _, err := w.Write([]byte(`{"results":[{"found":0,"hits":[]}]}`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	t.Cleanup(srv.Close)
 	queries := make([]backend.DataQuery, 20)
