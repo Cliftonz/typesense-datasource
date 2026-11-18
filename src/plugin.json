@@ -1,0 +1,32 @@
+{
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json",
+  "type": "datasource",
+  "name": "Typesense",
+  "id": "cliftonz-typesense-datasource",
+  "metrics": true,
+  "alerting": true,
+  "backend": true,
+  "executable": "gpx_typesense",
+  "info": {
+    "description": "Query Typesense collections and chart search hits as time series, with alerting support",
+    "author": {
+      "name": "cliftonz"
+    },
+    "keywords": ["datasource", "typesense", "search"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      { "name": "Website", "url": "https://github.com/cliftonz/typesense-datasource" },
+      { "name": "Issues", "url": "https://github.com/cliftonz/typesense-datasource/issues" }
+    ],
+    "screenshots": [],
+    "version": "%VERSION%",
+    "updated": "%TODAY%"
+  },
+  "dependencies": {
+    "grafanaDependency": ">=13.2.0",
+    "plugins": []
+  }
+}
