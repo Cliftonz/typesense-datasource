@@ -139,7 +139,9 @@ func TestGroupBySeriesPagesPast250Groups(t *testing.T) {
 func groupByPages(t *testing.T, pages ...string) string {
 	page := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(`{"results":[` + pages[page] + `]}`))
+		if _, err := w.Write([]byte(`{"results":[` + pages[page] + `]}`)); err != nil {
+			t.Error(err)
+		}
 		page++
 	}))
 	t.Cleanup(srv.Close)
