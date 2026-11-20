@@ -2,6 +2,16 @@
 
 Query [Typesense](https://typesense.org/) collections from Grafana as tables or time series. The data source runs on the Grafana backend, so queries work in dashboards, Explore, and alert rules.
 
+## Screenshots
+
+![Demo dashboard](https://raw.githubusercontent.com/cliftonz/typesense-datasource/main/src/img/screenshots/dashboard.png)
+
+![Query editor, builder mode](https://raw.githubusercontent.com/cliftonz/typesense-datasource/main/src/img/screenshots/query-editor-builder.png)
+
+![Query editor, raw mode](https://raw.githubusercontent.com/cliftonz/typesense-datasource/main/src/img/screenshots/query-editor-raw.png)
+
+![Data source settings](https://raw.githubusercontent.com/cliftonz/typesense-datasource/main/src/img/screenshots/config-editor.png)
+
 ## Requirements
 
 - Grafana 13.2 or later

@@ -9,6 +9,7 @@
       "type": "timeseries",
       "title": "Orders and price stats (hits)",
       "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "interval": "1h",
       "fieldConfig": {
         "defaults": {},
         "overrides": [
@@ -90,6 +91,17 @@
           "perPage": 20,
           "timeField": "ts",
           "format": "table"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "convertFieldType",
+          "options": {
+            "conversions": [
+              { "targetField": "hour", "destinationType": "string" },
+              { "targetField": "hour", "destinationType": "time", "dateFormat": "X" }
+            ]
+          }
         }
       ]
     },

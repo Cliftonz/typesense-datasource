@@ -21,7 +21,12 @@
       { "name": "Website", "url": "https://github.com/cliftonz/typesense-datasource" },
       { "name": "Issues", "url": "https://github.com/cliftonz/typesense-datasource/issues" }
     ],
-    "screenshots": [],
+    "screenshots": [
+      { "name": "Demo dashboard", "path": "img/screenshots/dashboard.png" },
+      { "name": "Query editor, builder mode", "path": "img/screenshots/query-editor-builder.png" },
+      { "name": "Query editor, raw mode", "path": "img/screenshots/query-editor-raw.png" },
+      { "name": "Data source settings", "path": "img/screenshots/config-editor.png" }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
