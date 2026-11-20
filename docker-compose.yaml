@@ -19,3 +19,17 @@ services:
       - 8109:8108
     tmpfs:
       - /data
+    healthcheck:
+      test: ['CMD', 'bash', '-c', 'exec 3<>/dev/tcp/localhost/8108 && printf "GET /health HTTP/1.0\r\n\r\n" >&3 && grep -q "\"ok\":true" <&3']
+      interval: 2s
+      start_period: 30s
+      retries: 10
+
+  seed:
+    image: curlimages/curl:8.11.1
+    entrypoint: ['sh', '/seed/seed.sh']
+    volumes:
+      - ./scripts/seed:/seed:ro
+    depends_on:
+      typesense30:
+        condition: service_healthy

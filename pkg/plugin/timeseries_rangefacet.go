@@ -53,6 +53,7 @@ func (d *Datasource) rangeFacetCounts(ctx context.Context, qm queryModel, plan t
 	search["per_page"] = 0
 	search["facet_by"] = qm.TimeField + "(" + strings.Join(ranges, ", ") + ")"
 	search["max_facet_values"] = len(ranges)
+	search["facet_strategy"] = "exhaustive"
 	results, err := d.search(ctx, search)
 	if err != nil {
 		return nil, false, err

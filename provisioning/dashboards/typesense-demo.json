@@ -1,0 +1,154 @@
+{
+  "uid": "typesense-demo",
+  "title": "Typesense demo",
+  "schemaVersion": 41,
+  "time": { "from": "now-7d", "to": "now" },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Orders and price stats (hits)",
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 8 },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "sum" },
+            "properties": [{ "id": "custom.axisPlacement", "value": "right" }]
+          }
+        ]
+      },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "format": "timeseries",
+          "bucketMode": "hits",
+          "timeField": "ts",
+          "stats": true,
+          "valueField": "price"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Orders (range facet)",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "format": "timeseries",
+          "bucketMode": "rangeFacet",
+          "timeField": "ts"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Orders per hour (group by)",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "format": "timeseries",
+          "bucketMode": "groupBy",
+          "groupBy": "hour",
+          "minInterval": "1h"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "table",
+      "title": "Latest orders",
+      "gridPos": { "x": 0, "y": 16, "w": 24, "h": 9 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "sortBy": "ts:desc",
+          "perPage": 20,
+          "timeField": "ts",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "table",
+      "title": "Orders by brand and category (facets)",
+      "gridPos": { "x": 0, "y": 25, "w": 8, "h": 9 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "facetBy": "brand,category",
+          "timeField": "ts",
+          "format": "table"
+        }
+      ],
+      "transformations": [
+        { "id": "filterFieldsByName", "options": { "include": { "pattern": "^(value|count)$" } } }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "table",
+      "title": "Orders by category (groups)",
+      "gridPos": { "x": 8, "y": 25, "w": 8, "h": 9 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "builder",
+          "collection": "orders",
+          "q": "*",
+          "groupBy": "category",
+          "timeField": "ts",
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "table",
+      "title": "Top priced orders (raw multi_search)",
+      "gridPos": { "x": 16, "y": 25, "w": 8, "h": 9 },
+      "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "cliftonz-typesense-datasource", "uid": "typesense" },
+          "editorMode": "raw",
+          "format": "table",
+          "rawBody": "{\"searches\": [{\"collection\": \"orders\", \"q\": \"*\", \"filter_by\": \"ts:[$__fromTime..$__toTime]\", \"sort_by\": \"price:desc\", \"include_fields\": \"title,brand,price\", \"per_page\": 20}]}"
+        }
+      ]
+    }
+  ]
+}

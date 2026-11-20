@@ -25,6 +25,10 @@ This starts Grafana with the plugin loaded, plus two Typesense servers with API 
 | `typesense27` | 27.1 | 8107 |
 | `typesense30` | 30.2 | 8109 |
 
+The one-shot `seed` service (`scripts/seed/seed.sh`) recreates an `orders` collection on `typesense30` with 5000 synthetic orders spread over the 7 days before it runs. The provisioned **Typesense demo** dashboard queries it with every query mode; run `docker compose up seed` to refresh the data so it lines up with the current time.
+
+If Grafana fails to start with "data source not found" after pulling, run `docker compose up -d --force-recreate grafana`.
+
 ## Tests
 
 The Go tests run against both Typesense servers, so start them first.

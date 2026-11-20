@@ -210,6 +210,20 @@ func TestRangeFacetSeriesStatsSearchesAreExhaustive(t *testing.T) {
 	}
 }
 
+func TestRangeFacetSeriesCountsEveryMatchingDocument(t *testing.T) {
+	for _, url := range typesenseServers {
+		t.Run(url, func(t *testing.T) {
+			docs := make([]map[string]any, 3000)
+			for i := range docs {
+				docs[i] = map[string]any{"ts": rangeFacetT0 + i%120}
+			}
+			collection := testCollection(t, url, "rangefacet_many", []map[string]any{{"name": "ts", "type": "int64", "facet": true}}, docs...)
+			frame := rangeFacetRun(t, url, map[string]any{"collection": collection, "timeField": "ts"}, 120, time.Minute)
+			assertJSONEqual(t, seriesCounts(frame), []int64{1500, 1500})
+		})
+	}
+}
+
 func TestRangeFacetSeriesWideningNoticeShowsExactInterval(t *testing.T) {
 	url := "http://localhost:8109"
 	collection := rangeFacetCollection(t, url)
